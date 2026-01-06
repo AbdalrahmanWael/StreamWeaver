@@ -29,7 +29,7 @@ class StreamGenerator:
     ):
         """
         Initialize the stream generator.
-        
+
         Args:
             session_store: Session storage backend.
             queue_size: Maximum size of event queues.
@@ -65,11 +65,11 @@ class StreamGenerator:
     async def publish_event(self, session_id: str, event: StreamEvent) -> bool:
         """
         Publish an event to a specific session stream.
-        
+
         Args:
             session_id: Target session.
             event: The event to publish.
-            
+
         Returns:
             True if event was queued, False if dropped due to backpressure.
         """
@@ -116,20 +116,18 @@ class StreamGenerator:
     ) -> AsyncGenerator[str, None]:
         """
         Generate SSE stream for a specific session.
-        
+
         Args:
             session_id: The session to stream.
             last_event_id: Optional Last-Event-ID for replay.
             event_filter: Optional filter to apply to events.
-            
+
         Yields:
             SSE-formatted event strings.
         """
         # Handle reconnection with replay
         if last_event_id:
-            replay_events = await self._event_buffers.get_events_after(
-                session_id, last_event_id
-            )
+            replay_events = await self._event_buffers.get_events_after(session_id, last_event_id)
             for event in replay_events:
                 if event_filter and not event_filter.should_include(event):
                     continue
@@ -170,9 +168,7 @@ class StreamGenerator:
                 logger.info(f"Stream started for session {session_id}")
 
             # Start heartbeat task
-            heartbeat_task = asyncio.create_task(
-                self._heartbeat_generator(session_id, event_queue)
-            )
+            heartbeat_task = asyncio.create_task(self._heartbeat_generator(session_id, event_queue))
 
             while True:
                 try:
@@ -223,10 +219,7 @@ class StreamGenerator:
                 except asyncio.CancelledError:
                     pass
 
-            if (
-                session_id in self.active_streams
-                and self.active_streams[session_id] is event_queue
-            ):
+            if session_id in self.active_streams and self.active_streams[session_id] is event_queue:
                 self.active_streams.pop(session_id, None)
 
             if session_id in self.active_stream_tasks:

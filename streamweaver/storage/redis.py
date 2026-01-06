@@ -27,7 +27,7 @@ except ImportError:
 class RedisSessionStore(SessionStore):
     """
     Redis-backed session storage for production deployments.
-    
+
     Features:
     - Connection pooling for high performance
     - TTL-based automatic session expiration
@@ -45,7 +45,7 @@ class RedisSessionStore(SessionStore):
     ):
         """
         Initialize Redis session store.
-        
+
         Args:
             redis_url: Redis connection URL.
             session_timeout: Session TTL in seconds.
@@ -93,18 +93,20 @@ class RedisSessionStore(SessionStore):
 
     def _serialize_session(self, session: SessionData) -> str:
         """Serialize session data to JSON."""
-        return json.dumps({
-            "session_id": session.session_id,
-            "user_request": session.user_request,
-            "context": session.context,
-            "created_at": session.created_at,
-            "last_activity": session.last_activity,
-            "status": session.status,
-            "total_steps": session.total_steps,
-            "completed_steps": session.completed_steps,
-            "current_step": session.current_step,
-            "user_id": session.user_id,
-        })
+        return json.dumps(
+            {
+                "session_id": session.session_id,
+                "user_request": session.user_request,
+                "context": session.context,
+                "created_at": session.created_at,
+                "last_activity": session.last_activity,
+                "status": session.status,
+                "total_steps": session.total_steps,
+                "completed_steps": session.completed_steps,
+                "current_step": session.current_step,
+                "user_id": session.user_id,
+            }
+        )
 
     def _deserialize_session(self, data: str) -> SessionData:
         """Deserialize session data from JSON."""
@@ -197,9 +199,7 @@ class RedisSessionStore(SessionStore):
         if ttl > 0:
             await self._redis.setex(key, ttl, self._serialize_session(session))
         else:
-            await self._redis.setex(
-                key, self.session_timeout, self._serialize_session(session)
-            )
+            await self._redis.setex(key, self.session_timeout, self._serialize_session(session))
 
         return True
 

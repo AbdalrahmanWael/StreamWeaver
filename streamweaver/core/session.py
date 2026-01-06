@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class SessionData:
     """Data stored for a workflow session"""
+
     session_id: str
     user_request: str
     context: Dict[str, Any] = field(default_factory=dict)
@@ -31,7 +32,13 @@ class SessionStore(ABC):
     """Abstract base class for session storage backends"""
 
     @abstractmethod
-    async def create_session(self, session_id: str, user_request: str, context: Dict[str, Any], user_id: Optional[str] = None) -> SessionData:
+    async def create_session(
+        self,
+        session_id: str,
+        user_request: str,
+        context: Dict[str, Any],
+        user_id: Optional[str] = None,
+    ) -> SessionData:
         """Create a new session"""
         pass
 
@@ -70,7 +77,13 @@ class InMemorySessionStore(SessionStore):
         logger.info("In-memory session store initialized")
         self._cleanup_task = asyncio.create_task(self._cleanup_expired_sessions())
 
-    async def create_session(self, session_id: str, user_request: str, context: Dict[str, Any], user_id: Optional[str] = None) -> SessionData:
+    async def create_session(
+        self,
+        session_id: str,
+        user_request: str,
+        context: Dict[str, Any],
+        user_id: Optional[str] = None,
+    ) -> SessionData:
         """Create a new session"""
         if session_id in self.sessions:
             logger.warning(f"Session {session_id} already exists. Overwriting.")
@@ -82,7 +95,7 @@ class InMemorySessionStore(SessionStore):
             context=context,
             created_at=now,
             last_activity=now,
-            user_id=user_id
+            user_id=user_id,
         )
         self.sessions[session_id] = session
         logger.info(f"Created session: {session_id}")

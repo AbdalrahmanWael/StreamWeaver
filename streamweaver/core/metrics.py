@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 # Try to import prometheus_client, but don't fail if it's not installed
 try:
     from prometheus_client import Counter, Gauge, Histogram, Info, CollectorRegistry, REGISTRY
+
     PROMETHEUS_AVAILABLE = True
 except ImportError:
     PROMETHEUS_AVAILABLE = False
@@ -46,7 +47,7 @@ class NoOpMetric:
 class StreamWeaverMetrics:
     """
     Prometheus metrics for StreamWeaver.
-    
+
     Provides counters, gauges, and histograms for monitoring:
     - Event publishing rate and latency
     - Session lifecycle
@@ -63,7 +64,7 @@ class StreamWeaverMetrics:
     ):
         """
         Initialize metrics.
-        
+
         Args:
             enabled: Whether metrics collection is enabled.
             prefix: Prefix for all metric names.
@@ -288,12 +289,12 @@ def init_metrics(
 ) -> StreamWeaverMetrics:
     """
     Initialize the global metrics instance.
-    
+
     Args:
         enabled: Whether to enable metrics collection.
         prefix: Prefix for metric names.
         registry: Optional custom Prometheus registry.
-        
+
     Returns:
         The initialized metrics instance.
     """

@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class EventBuffer:
     """
     Ring buffer for storing recent events per session.
-    
+
     Enables event replay when clients reconnect with Last-Event-ID.
     Uses a deque for O(1) operations on both ends.
     """
@@ -38,7 +38,7 @@ class EventBuffer:
     def add(self, event: StreamEvent) -> None:
         """
         Add an event to the buffer.
-        
+
         If the buffer is full, the oldest event is automatically removed.
         """
         # If buffer is at capacity, remove oldest event from index
@@ -54,10 +54,10 @@ class EventBuffer:
     def get_events_after(self, last_event_id: str) -> List[StreamEvent]:
         """
         Get all events that occurred after the given event ID.
-        
+
         Args:
             last_event_id: The Last-Event-ID from the client reconnection.
-            
+
         Returns:
             List of events that occurred after the given ID, in order.
             Empty list if the event ID is not found (too old or invalid).
@@ -90,7 +90,7 @@ class EventBuffer:
     def clear(self) -> int:
         """
         Clear all events from the buffer.
-        
+
         Returns:
             Number of events cleared.
         """
@@ -108,14 +108,14 @@ class EventBuffer:
 class SessionEventBuffers:
     """
     Manages event buffers for multiple sessions.
-    
+
     Thread-safe access to per-session event buffers.
     """
 
     def __init__(self, buffer_size: int = 100):
         """
         Initialize the session event buffers.
-        
+
         Args:
             buffer_size: Maximum events to store per session.
         """

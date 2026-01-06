@@ -34,7 +34,7 @@ class TestStreamEventType:
             "REASONING_CHUNK",
             "USER_DECISION",
         ]
-        
+
         for type_name in expected_types:
             assert hasattr(StreamEventType, type_name)
 
@@ -82,7 +82,7 @@ class TestStreamEvent:
             timestamp=time.time(),
             message="Starting workflow",
         )
-        
+
         assert event.event_type == StreamEventType.WORKFLOW_STARTED
         assert event.session_id == "test-session"
         assert event.message == "Starting workflow"
@@ -96,7 +96,7 @@ class TestStreamEvent:
             session_id="test",
             timestamp=time.time(),
         )
-        
+
         assert event.event_id is not None
         assert len(event.event_id) > 0
 
@@ -109,7 +109,7 @@ class TestStreamEvent:
             timestamp=time.time(),
             event_id=custom_id,
         )
-        
+
         assert event.event_id == custom_id
 
     def test_event_with_data(self):
@@ -122,7 +122,7 @@ class TestStreamEvent:
             data=data,
             tool_used="search",
         )
-        
+
         assert event.data == data
         assert event.tool_used == "search"
 
@@ -143,7 +143,7 @@ class TestStreamEvent:
             metadata=metadata,
             visibility=EventVisibility.LIVE_UI_ONLY,
         )
-        
+
         assert event.step_number == 3
         assert event.progress_percent == 75.5
         assert event.duration_ms == 1500
@@ -158,19 +158,19 @@ class TestStreamEvent:
             timestamp=1234567890.0,
             message="Processing",
         )
-        
+
         sse = event.to_sse_format()
-        
+
         # Check SSE structure
         assert f"id: {event.event_id}" in sse
         assert "event: message" in sse
         assert "data: " in sse
         assert sse.endswith("\n\n")
-        
+
         # Parse and verify JSON data
         data_line = [line for line in sse.split("\n") if line.startswith("data: ")][0]
         json_data = json.loads(data_line[6:])
-        
+
         assert json_data["type"] == "step_progress"
         assert json_data["sessionId"] == "test-session"
         assert json_data["message"] == "Processing"
@@ -183,11 +183,11 @@ class TestStreamEvent:
             session_id="test",
             timestamp=time.time(),
         )
-        
+
         sse = event.to_sse_format()
         data_line = [line for line in sse.split("\n") if line.startswith("data: ")][0]
         json_data = json.loads(data_line[6:])
-        
+
         # step should not be present since step_number was None
         assert "step" not in json_data
 
@@ -200,9 +200,9 @@ class TestStreamEvent:
             message="Done",
             data={"result": "success"},
         )
-        
+
         d = event.to_dict()
-        
+
         assert d["type"] == "workflow_completed"
         assert d["sessionId"] == "test"
         assert d["message"] == "Done"
@@ -221,9 +221,9 @@ class TestStreamEvent:
             "progress": 50.0,
             "visibility": "user_facing",
         }
-        
+
         event = StreamEvent.from_dict(data)
-        
+
         assert event.event_type == StreamEventType.STEP_PROGRESS
         assert event.event_id == "custom-id"
         assert event.session_id == "test"
@@ -239,9 +239,9 @@ class TestStreamEvent:
             "sessionId": "test",
             "timestamp": time.time(),
         }
-        
+
         event = StreamEvent.from_dict(data)
-        
+
         # Should keep as string
         assert event.event_type == "custom_type"
 
@@ -252,6 +252,6 @@ class TestStreamEvent:
             session_id="test",
             timestamp=time.time(),
         )
-        
+
         sse = event.to_sse_format()
         assert "custom_type" in sse

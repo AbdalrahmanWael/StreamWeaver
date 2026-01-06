@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def create_lifespan(weaver: StreamWeaver) -> Callable:
     """
     Create a lifespan context manager for FastAPI.
-    
+
     Usage:
         weaver = StreamWeaver()
         app = FastAPI(lifespan=create_lifespan(weaver))
@@ -46,7 +46,7 @@ def setup_streaming_routes(
 ) -> None:
     """
     Add streaming routes to FastAPI app.
-    
+
     Args:
         app: FastAPI application.
         weaver: StreamWeaver instance.
@@ -63,7 +63,7 @@ def setup_streaming_routes(
     ):
         """
         Get SSE stream for a session.
-        
+
         Supports reconnection via Last-Event-ID header or query parameter.
         """
         session = await weaver.get_session(session_id)
@@ -82,9 +82,7 @@ def setup_streaming_routes(
 
         # Check if compression is enabled and client supports it
         accept_encoding = request.headers.get("Accept-Encoding", "")
-        use_compression = (
-            weaver.config.enable_compression and "gzip" in accept_encoding
-        )
+        use_compression = weaver.config.enable_compression and "gzip" in accept_encoding
 
         if use_compression:
             # Wrap generator with compression
@@ -240,13 +238,13 @@ def create_streaming_app(
 ) -> FastAPI:
     """
     Create a FastAPI app with streaming routes.
-    
+
     Args:
         weaver: StreamWeaver instance.
         title: API title.
         enable_websocket: Enable WebSocket endpoint.
         enable_metrics: Enable metrics endpoint.
-        
+
     Returns:
         Configured FastAPI application.
     """

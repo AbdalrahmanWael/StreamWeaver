@@ -21,7 +21,7 @@ async def test_streamweaver_initialization():
 
     assert weaver is not None
     assert weaver.config is not None
-    
+
     await weaver.shutdown()
 
 
@@ -48,7 +48,7 @@ async def test_custom_config():
     assert weaver.config.queue_size == 500
     assert weaver.config.backpressure_policy == BackpressurePolicy.DROP_NEWEST
     assert weaver.config.event_buffer_size == 200
-    
+
     await weaver.shutdown()
 
 
@@ -71,7 +71,7 @@ async def test_register_session():
     assert session.user_request == "Hello world"
     assert session.context == {"key": "value"}
     assert session.user_id == "user-123"
-    
+
     await weaver.shutdown()
 
 
@@ -94,7 +94,7 @@ async def test_publish_event():
     # Verify session was updated
     session = await weaver.get_session("test-2")
     assert session is not None
-    
+
     await weaver.shutdown()
 
 
@@ -123,7 +123,7 @@ async def test_publish_with_visibility():
         visibility=EventVisibility.INTERNAL_ONLY,
     )
     assert success2 is True
-    
+
     await weaver.shutdown()
 
 
@@ -153,7 +153,7 @@ async def test_stream_generation():
     # Get next chunk
     second_chunk = await stream_gen.__anext__()
     assert "event: message" in second_chunk
-    
+
     await weaver.shutdown()
 
 
@@ -171,7 +171,7 @@ async def test_close_stream():
 
     session = await weaver.get_session("test-4")
     assert session is None  # Session should be deleted
-    
+
     await weaver.shutdown()
 
 
@@ -199,7 +199,7 @@ async def test_event_callback():
 
     assert len(received_events) == 1
     assert received_events[0].message == "Test"
-    
+
     await weaver.shutdown()
 
 
@@ -213,7 +213,7 @@ async def test_check_capacity():
     # Should have capacity initially
     has_capacity = await weaver.check_capacity()
     assert has_capacity is True
-    
+
     await weaver.shutdown()
 
 
@@ -240,7 +240,7 @@ async def test_get_queue_stats():
     stats = weaver.get_queue_stats("test-stats")
     assert stats["exists"] is True
     assert stats["size"] >= 0
-    
+
     await weaver.shutdown()
 
 
@@ -258,7 +258,7 @@ async def test_get_replay_events():
         event_type=StreamEventType.WORKFLOW_STARTED,
         message="Event 1",
     )
-    
+
     await weaver.publish(
         session_id="test-replay",
         event_type=StreamEventType.STEP_PROGRESS,
@@ -268,10 +268,10 @@ async def test_get_replay_events():
     # Get all replay events (use a fake event ID that won't exist)
     # Since we can't easily get the first event's ID, test the method works
     events = await weaver.get_replay_events("test-replay", "nonexistent-id")
-    
+
     # Should return empty since the ID wasn't found
     assert events == []
-    
+
     await weaver.shutdown()
 
 
@@ -283,7 +283,7 @@ async def test_session_not_found():
 
     with pytest.raises(ValueError, match="Session not found"):
         await weaver.get_stream_response("nonexistent")
-    
+
     await weaver.shutdown()
 
 
@@ -295,5 +295,5 @@ async def test_metrics_disabled_by_default():
 
     assert weaver.config.enable_metrics is False
     assert weaver.metrics is None
-    
+
     await weaver.shutdown()

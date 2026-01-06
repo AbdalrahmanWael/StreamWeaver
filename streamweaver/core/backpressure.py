@@ -21,7 +21,7 @@ class BackpressurePolicy(Enum):
 class BackpressureQueue:
     """
     Async queue with configurable backpressure handling.
-    
+
     Unlike asyncio.Queue, this queue can handle overflow gracefully
     using different policies instead of blocking indefinitely.
     """
@@ -33,7 +33,7 @@ class BackpressureQueue:
     ):
         """
         Initialize the backpressure queue.
-        
+
         Args:
             maxsize: Maximum number of items in the queue. 0 means unlimited.
             policy: How to handle overflow when queue is full.
@@ -67,10 +67,10 @@ class BackpressureQueue:
     async def put(self, item: Any) -> bool:
         """
         Put an item into the queue with backpressure handling.
-        
+
         Args:
             item: The item to put into the queue.
-            
+
         Returns:
             True if the item was added, False if it was dropped.
         """
@@ -119,13 +119,13 @@ class BackpressureQueue:
     async def get(self, timeout: Optional[float] = None) -> Any:
         """
         Get an item from the queue.
-        
+
         Args:
             timeout: Optional timeout in seconds.
-            
+
         Returns:
             The next item from the queue.
-            
+
         Raises:
             asyncio.TimeoutError: If timeout expires.
         """
@@ -150,7 +150,7 @@ class BackpressureQueue:
     async def clear(self) -> int:
         """
         Clear all items from the queue.
-        
+
         Returns:
             Number of items cleared.
         """

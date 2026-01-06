@@ -144,7 +144,7 @@ We value documentation! When making changes:
 
 If you have an idea for a new feature:
 
-1. Check existing [GitHub Issues](https://github.com/okiynai/streamweaver/issues) to avoid duplicates
+1. Check existing [GitHub Issues](https://github.com/AbdalrahmanWael/StreamWeaver/issues) to avoid duplicates
 2. Open a new issue with the "enhancement" label
 3. Describe the feature, use case, and proposed implementation
 4. We'll discuss and plan it together

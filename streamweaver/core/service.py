@@ -53,9 +53,7 @@ class StreamWeaverConfig(BaseModel):
 
     # Compression settings
     enable_compression: bool = Field(default=False, description="Enable gzip compression")
-    compression_threshold: int = Field(
-        default=1024, description="Min bytes before compressing"
-    )
+    compression_threshold: int = Field(default=1024, description="Min bytes before compressing")
 
     # Logging
     log_level: str = Field(default="INFO", description="Logging level")
@@ -71,15 +69,13 @@ class StreamWeaver:
     ):
         """
         Initialize StreamWeaver.
-        
+
         Args:
             config: Configuration options.
             session_store: Custom session storage backend.
         """
         self.config = config or StreamWeaverConfig()
-        self.session_store = session_store or InMemorySessionStore(
-            self.config.session_timeout
-        )
+        self.session_store = session_store or InMemorySessionStore(self.config.session_timeout)
         self.stream_generator = StreamGenerator(
             session_store=self.session_store,
             queue_size=self.config.queue_size,
@@ -140,7 +136,7 @@ class StreamWeaver:
     ) -> bool:
         """
         Publish an event to a session.
-        
+
         Args:
             session_id: Target session.
             event_type: Type of event.
@@ -148,7 +144,7 @@ class StreamWeaver:
             data: Arbitrary event data.
             visibility: Event visibility level.
             **kwargs: Additional event fields.
-            
+
         Returns:
             True if event was published, False if dropped.
         """
@@ -185,15 +181,15 @@ class StreamWeaver:
     ):
         """
         Get SSE streaming response for a session.
-        
+
         Args:
             session_id: The session to stream.
             last_event_id: Optional Last-Event-ID for reconnection.
             event_filter: Optional filter to apply to events.
-            
+
         Returns:
             Async generator yielding SSE-formatted strings.
-            
+
         Raises:
             ValueError: If session not found.
         """

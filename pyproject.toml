@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
-    {name = "Okiynai Team", email = "info@okiynai.com"},
+    {name = "Abdalrahman Wael"},
 ]
 keywords = [
     "sse",
@@ -68,11 +68,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/okiynai/streamweaver"
-Documentation = "https://github.com/okiynai/streamweaver#readme"
-Repository = "https://github.com/okiynai/streamweaver.git"
-Issues = "https://github.com/okiynai/streamweaver/issues"
-Changelog = "https://github.com/okiynai/streamweaver/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/AbdalrahmanWael/StreamWeaver"
+Documentation = "https://github.com/AbdalrahmanWael/StreamWeaver#readme"
+Repository = "https://github.com/AbdalrahmanWael/StreamWeaver.git"
+Issues = "https://github.com/AbdalrahmanWael/StreamWeaver/issues"
+Changelog = "https://github.com/AbdalrahmanWael/StreamWeaver/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["streamweaver"]

@@ -29,7 +29,7 @@ except ImportError:
 class WebSocketStreamHandler:
     """
     Handles WebSocket connections for streaming events.
-    
+
     Provides the same event delivery as SSE but with bidirectional communication
     support for future features like user decisions during workflows.
     """
@@ -42,7 +42,7 @@ class WebSocketStreamHandler:
     ):
         """
         Initialize WebSocket handler.
-        
+
         Args:
             weaver: StreamWeaver instance.
             ping_interval: Seconds between ping messages.
@@ -67,7 +67,7 @@ class WebSocketStreamHandler:
     ) -> None:
         """
         Register a handler for incoming WebSocket messages.
-        
+
         Args:
             message_type: The type field in incoming messages.
             handler: Async function(session_id, data) to handle messages.
@@ -84,7 +84,7 @@ class WebSocketStreamHandler:
     ) -> None:
         """
         Handle a WebSocket connection for a session.
-        
+
         Args:
             websocket: The WebSocket connection.
             session_id: The session to stream.
@@ -183,10 +183,12 @@ class WebSocketStreamHandler:
                         await handler(session_id, data)
                     except Exception as e:
                         logger.error(f"Error in message handler: {e}")
-                        await websocket.send_json({
-                            "type": "error",
-                            "message": f"Handler error: {str(e)}",
-                        })
+                        await websocket.send_json(
+                            {
+                                "type": "error",
+                                "message": f"Handler error: {str(e)}",
+                            }
+                        )
                 else:
                     logger.debug(f"No handler for message type: {message_type}")
 
@@ -208,10 +210,12 @@ class WebSocketStreamHandler:
                 await asyncio.sleep(self.ping_interval)
 
                 # Send application-level ping (WebSocket protocol ping is automatic)
-                await websocket.send_json({
-                    "type": "ping",
-                    "session_id": session_id,
-                })
+                await websocket.send_json(
+                    {
+                        "type": "ping",
+                        "session_id": session_id,
+                    }
+                )
 
         except asyncio.CancelledError:
             raise
@@ -240,11 +244,11 @@ class WebSocketStreamHandler:
     ) -> bool:
         """
         Send a message to a specific session's WebSocket.
-        
+
         Args:
             session_id: Target session.
             message: JSON-serializable message.
-            
+
         Returns:
             True if sent, False if session not connected.
         """
@@ -262,10 +266,10 @@ class WebSocketStreamHandler:
     async def broadcast(self, message: Dict[str, Any]) -> int:
         """
         Broadcast a message to all connected sessions.
-        
+
         Args:
             message: JSON-serializable message.
-            
+
         Returns:
             Number of sessions the message was sent to.
         """
@@ -278,11 +282,11 @@ class WebSocketStreamHandler:
     async def disconnect_session(self, session_id: str, reason: str = "Server disconnect") -> bool:
         """
         Disconnect a session's WebSocket.
-        
+
         Args:
             session_id: Session to disconnect.
             reason: Reason for disconnection.
-            
+
         Returns:
             True if disconnected, False if not connected.
         """

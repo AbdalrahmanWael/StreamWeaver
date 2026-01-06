@@ -25,17 +25,19 @@ class BatchConfig:
     max_batch_size: int = 10
     max_batch_delay_ms: int = 50
     # Event types that should never be batched (sent immediately)
-    immediate_types: List[str] = field(default_factory=lambda: [
-        "workflow_completed",
-        "error",
-        "workflow_interruption",
-    ])
+    immediate_types: List[str] = field(
+        default_factory=lambda: [
+            "workflow_completed",
+            "error",
+            "workflow_interruption",
+        ]
+    )
 
 
 class EventBatcher:
     """
     Batches multiple events for efficient delivery.
-    
+
     Events are accumulated and sent either when:
     1. The batch reaches max_batch_size
     2. The batch timeout expires
@@ -50,7 +52,7 @@ class EventBatcher:
     ):
         """
         Initialize the event batcher.
-        
+
         Args:
             session_id: The session this batcher belongs to.
             config: Batching configuration.
@@ -74,10 +76,10 @@ class EventBatcher:
     async def add(self, event: StreamEvent) -> Optional[str]:
         """
         Add an event to the batch.
-        
+
         Args:
             event: The event to add.
-            
+
         Returns:
             SSE-formatted string if batch should be flushed, None otherwise.
         """
@@ -90,9 +92,7 @@ class EventBatcher:
 
         # Check if this event type should be sent immediately
         event_type_value = (
-            event.event_type.value
-            if hasattr(event.event_type, "value")
-            else event.event_type
+            event.event_type.value if hasattr(event.event_type, "value") else event.event_type
         )
         if event_type_value in self.config.immediate_types:
             # Flush current batch first, then return this event
@@ -163,15 +163,13 @@ class EventBatcher:
         last_event = events[-1]
 
         return (
-            f"id: {last_event.event_id}\n"
-            f"event: batch\n"
-            f"data: {json.dumps(batch_data)}\n\n"
+            f"id: {last_event.event_id}\n" f"event: batch\n" f"data: {json.dumps(batch_data)}\n\n"
         )
 
     async def flush(self) -> str:
         """
         Force flush the current batch.
-        
+
         Returns:
             SSE-formatted string of batched events.
         """
@@ -180,7 +178,7 @@ class EventBatcher:
     async def close(self) -> str:
         """
         Close the batcher and flush remaining events.
-        
+
         Returns:
             SSE-formatted string of remaining events.
         """
@@ -202,7 +200,7 @@ class BatcherPool:
     def __init__(self, default_config: Optional[BatchConfig] = None):
         """
         Initialize the batcher pool.
-        
+
         Args:
             default_config: Default batching configuration for new batchers.
         """

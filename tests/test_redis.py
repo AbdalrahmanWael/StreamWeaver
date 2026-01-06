@@ -10,10 +10,7 @@ from streamweaver.storage.redis import RedisSessionStore, REDIS_AVAILABLE
 
 
 # Skip entire module if redis is not available
-pytestmark = pytest.mark.skipif(
-    not REDIS_AVAILABLE,
-    reason="redis package not installed"
-)
+pytestmark = pytest.mark.skipif(not REDIS_AVAILABLE, reason="redis package not installed")
 
 
 @pytest.fixture
@@ -26,12 +23,12 @@ async def redis_store():
         key_prefix=f"test:streamweaver:{time.time()}:",
         db=15,  # Use a separate database for tests
     )
-    
+
     try:
         await store.initialize()
     except Exception as e:
         pytest.skip(f"Redis not available: {e}")
-    
+
     try:
         yield store
     finally:
@@ -57,7 +54,7 @@ class TestRedisSessionStore:
             context={"key": "value"},
             user_id="user-123",
         )
-        
+
         assert session.session_id == "test-1"
         assert session.user_request == "Hello"
         assert session.context == {"key": "value"}
@@ -72,9 +69,9 @@ class TestRedisSessionStore:
             user_request="Test request",
             context={},
         )
-        
+
         session = await redis_store.get_session("test-2")
-        
+
         assert session is not None
         assert session.session_id == "test-2"
         assert session.user_request == "Test request"
@@ -83,7 +80,7 @@ class TestRedisSessionStore:
     async def test_get_nonexistent_session(self, redis_store):
         """Test getting a session that doesn't exist."""
         session = await redis_store.get_session("nonexistent")
-        
+
         assert session is None
 
     @pytest.mark.asyncio
@@ -94,16 +91,16 @@ class TestRedisSessionStore:
             user_request="Initial",
             context={},
         )
-        
+
         success = await redis_store.update_session(
             "test-3",
             status="processing",
             current_step="Step 1",
             completed_steps=1,
         )
-        
+
         assert success is True
-        
+
         session = await redis_store.get_session("test-3")
         assert session.status == "processing"
         assert session.current_step == "Step 1"
@@ -116,7 +113,7 @@ class TestRedisSessionStore:
             "nonexistent",
             status="completed",
         )
-        
+
         assert success is False
 
     @pytest.mark.asyncio
@@ -127,10 +124,10 @@ class TestRedisSessionStore:
             user_request="To delete",
             context={},
         )
-        
+
         success = await redis_store.delete_session("test-4")
         assert success is True
-        
+
         session = await redis_store.get_session("test-4")
         assert session is None
 
@@ -138,20 +135,20 @@ class TestRedisSessionStore:
     async def test_delete_nonexistent_session(self, redis_store):
         """Test deleting a session that doesn't exist."""
         success = await redis_store.delete_session("nonexistent")
-        
+
         assert success is False
 
     @pytest.mark.asyncio
     async def test_get_active_count(self, redis_store):
         """Test counting active sessions."""
         initial_count = await redis_store.get_active_count()
-        
+
         await redis_store.create_session("count-1", "Request 1", {})
         await redis_store.create_session("count-2", "Request 2", {})
         await redis_store.create_session("count-3", "Request 3", {})
-        
+
         count = await redis_store.get_active_count()
-        
+
         assert count == initial_count + 3
 
     @pytest.mark.asyncio
@@ -159,9 +156,9 @@ class TestRedisSessionStore:
         """Test getting all session IDs."""
         await redis_store.create_session("list-1", "Request 1", {})
         await redis_store.create_session("list-2", "Request 2", {})
-        
+
         session_ids = await redis_store.get_all_session_ids()
-        
+
         assert "list-1" in session_ids
         assert "list-2" in session_ids
 
@@ -173,16 +170,16 @@ class TestRedisSessionStore:
             user_request="To extend",
             context={},
         )
-        
+
         success = await redis_store.extend_session("extend-1", 7200)
-        
+
         assert success is True
 
     @pytest.mark.asyncio
     async def test_extend_nonexistent_session(self, redis_store):
         """Test extending a session that doesn't exist."""
         success = await redis_store.extend_session("nonexistent", 7200)
-        
+
         assert success is False
 
     @pytest.mark.asyncio
@@ -193,15 +190,15 @@ class TestRedisSessionStore:
             "history": [1, 2, 3],
             "nested": {"deep": {"value": True}},
         }
-        
+
         await redis_store.create_session(
             session_id="complex-1",
             user_request="Complex context",
             context=context,
         )
-        
+
         session = await redis_store.get_session("complex-1")
-        
+
         assert session.context == context
 
     @pytest.mark.asyncio
@@ -212,14 +209,14 @@ class TestRedisSessionStore:
             user_request="Original",
             context={"version": 1},
         )
-        
+
         await redis_store.create_session(
             session_id="overwrite-1",
             user_request="Updated",
             context={"version": 2},
         )
-        
+
         session = await redis_store.get_session("overwrite-1")
-        
+
         assert session.user_request == "Updated"
         assert session.context == {"version": 2}

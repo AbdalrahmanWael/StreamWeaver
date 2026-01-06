@@ -16,7 +16,7 @@ def safe_serialize(obj: Any) -> Any:
         return [safe_serialize(item) for item in obj]
     elif isinstance(obj, dict):
         return {safe_serialize(k): safe_serialize(v) for k, v in obj.items()}
-    elif hasattr(obj, '__dict__'):
+    elif hasattr(obj, "__dict__"):
         return safe_serialize(obj.__dict__)
     else:
         return str(obj)

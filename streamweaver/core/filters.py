@@ -21,10 +21,10 @@ class EventFilter(ABC):
     def should_include(self, event: StreamEvent) -> bool:
         """
         Determine if an event should be included in the stream.
-        
+
         Args:
             event: The event to check.
-            
+
         Returns:
             True if the event should be included, False to filter it out.
         """
@@ -49,7 +49,7 @@ class VisibilityFilter(EventFilter):
     def __init__(self, visibilities: Union[EventVisibility, List[EventVisibility]]):
         """
         Initialize the visibility filter.
-        
+
         Args:
             visibilities: One or more visibility levels to include.
         """
@@ -74,7 +74,7 @@ class TypeFilter(EventFilter):
     ):
         """
         Initialize the type filter.
-        
+
         Args:
             event_types: One or more event types to match.
             include: If True, include matching events. If False, exclude them.
@@ -111,7 +111,7 @@ class CompositeFilter(EventFilter):
     def __init__(self, filters: List[EventFilter], operator: str = "and"):
         """
         Initialize the composite filter.
-        
+
         Args:
             filters: List of filters to combine.
             operator: Either "and" or "or".
@@ -150,7 +150,7 @@ class CallableFilter(EventFilter):
     def __init__(self, predicate: Callable[[StreamEvent], bool]):
         """
         Initialize the callable filter.
-        
+
         Args:
             predicate: A function that takes an event and returns True to include it.
         """
@@ -169,7 +169,7 @@ class SessionFilter(EventFilter):
     def __init__(self, session_ids: Union[str, List[str]], include: bool = True):
         """
         Initialize the session filter.
-        
+
         Args:
             session_ids: One or more session IDs to match.
             include: If True, include matching events. If False, exclude them.
@@ -192,23 +192,25 @@ class SessionFilter(EventFilter):
 USER_FACING_FILTER = VisibilityFilter(EventVisibility.USER_FACING)
 LIVE_UI_FILTER = VisibilityFilter([EventVisibility.USER_FACING, EventVisibility.LIVE_UI_ONLY])
 NO_HEARTBEAT_FILTER = TypeFilter(StreamEventType.HEARTBEAT, include=False)
-PROGRESS_ONLY_FILTER = TypeFilter([
-    StreamEventType.WORKFLOW_STARTED,
-    StreamEventType.STEP_STARTED,
-    StreamEventType.STEP_PROGRESS,
-    StreamEventType.STEP_COMPLETED,
-    StreamEventType.WORKFLOW_COMPLETED,
-])
+PROGRESS_ONLY_FILTER = TypeFilter(
+    [
+        StreamEventType.WORKFLOW_STARTED,
+        StreamEventType.STEP_STARTED,
+        StreamEventType.STEP_PROGRESS,
+        StreamEventType.STEP_COMPLETED,
+        StreamEventType.WORKFLOW_COMPLETED,
+    ]
+)
 
 
 def apply_filter(events: List[StreamEvent], filter_: Optional[EventFilter]) -> List[StreamEvent]:
     """
     Apply a filter to a list of events.
-    
+
     Args:
         events: List of events to filter.
         filter_: The filter to apply, or None to include all events.
-        
+
     Returns:
         Filtered list of events.
     """

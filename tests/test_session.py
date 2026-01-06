@@ -18,7 +18,7 @@ class TestSessionData:
             context={"key": "value"},
             user_id="user-123",
         )
-        
+
         assert session.session_id == "test-1"
         assert session.user_request == "Hello"
         assert session.context == {"key": "value"}
@@ -35,7 +35,7 @@ class TestSessionData:
             user_request="Test",
         )
         after = time.time()
-        
+
         assert before <= session.created_at <= after
         assert before <= session.last_activity <= after
 
@@ -48,10 +48,10 @@ class TestInMemorySessionStore:
         """Test store initialization."""
         store = InMemorySessionStore()
         await store.initialize()
-        
+
         count = await store.get_active_count()
         assert count == 0
-        
+
         await store.close()
 
     @pytest.mark.asyncio
@@ -59,19 +59,19 @@ class TestInMemorySessionStore:
         """Test creating a session."""
         store = InMemorySessionStore()
         await store.initialize()
-        
+
         session = await store.create_session(
             session_id="test-1",
             user_request="Hello",
             context={"key": "value"},
             user_id="user-123",
         )
-        
+
         assert session.session_id == "test-1"
         assert session.user_request == "Hello"
         assert session.context == {"key": "value"}
         assert session.user_id == "user-123"
-        
+
         await store.close()
 
     @pytest.mark.asyncio
@@ -79,13 +79,13 @@ class TestInMemorySessionStore:
         """Test getting a session."""
         store = InMemorySessionStore()
         await store.initialize()
-        
+
         await store.create_session("test-1", "Request", {})
-        
+
         session = await store.get_session("test-1")
         assert session is not None
         assert session.session_id == "test-1"
-        
+
         await store.close()
 
     @pytest.mark.asyncio
@@ -93,10 +93,10 @@ class TestInMemorySessionStore:
         """Test getting a session that doesn't exist."""
         store = InMemorySessionStore()
         await store.initialize()
-        
+
         session = await store.get_session("nonexistent")
         assert session is None
-        
+
         await store.close()
 
     @pytest.mark.asyncio
@@ -104,9 +104,9 @@ class TestInMemorySessionStore:
         """Test updating a session."""
         store = InMemorySessionStore()
         await store.initialize()
-        
+
         await store.create_session("test-1", "Request", {})
-        
+
         success = await store.update_session(
             "test-1",
             status="processing",
@@ -114,12 +114,12 @@ class TestInMemorySessionStore:
             completed_steps=1,
         )
         assert success is True
-        
+
         session = await store.get_session("test-1")
         assert session.status == "processing"
         assert session.current_step == "Step 1"
         assert session.completed_steps == 1
-        
+
         await store.close()
 
     @pytest.mark.asyncio
@@ -127,13 +127,13 @@ class TestInMemorySessionStore:
         """Test updating a session that doesn't exist."""
         store = InMemorySessionStore()
         await store.initialize()
-        
+
         success = await store.update_session(
             "nonexistent",
             status="completed",
         )
         assert success is False
-        
+
         await store.close()
 
     @pytest.mark.asyncio
@@ -141,15 +141,15 @@ class TestInMemorySessionStore:
         """Test deleting a session."""
         store = InMemorySessionStore()
         await store.initialize()
-        
+
         await store.create_session("test-1", "Request", {})
-        
+
         success = await store.delete_session("test-1")
         assert success is True
-        
+
         session = await store.get_session("test-1")
         assert session is None
-        
+
         await store.close()
 
     @pytest.mark.asyncio
@@ -157,10 +157,10 @@ class TestInMemorySessionStore:
         """Test deleting a session that doesn't exist."""
         store = InMemorySessionStore()
         await store.initialize()
-        
+
         success = await store.delete_session("nonexistent")
         assert success is False
-        
+
         await store.close()
 
     @pytest.mark.asyncio
@@ -168,18 +168,18 @@ class TestInMemorySessionStore:
         """Test counting active sessions."""
         store = InMemorySessionStore()
         await store.initialize()
-        
+
         assert await store.get_active_count() == 0
-        
+
         await store.create_session("test-1", "Request 1", {})
         assert await store.get_active_count() == 1
-        
+
         await store.create_session("test-2", "Request 2", {})
         assert await store.get_active_count() == 2
-        
+
         await store.delete_session("test-1")
         assert await store.get_active_count() == 1
-        
+
         await store.close()
 
     @pytest.mark.asyncio
@@ -187,14 +187,14 @@ class TestInMemorySessionStore:
         """Test that creating a session with existing ID overwrites it."""
         store = InMemorySessionStore()
         await store.initialize()
-        
+
         await store.create_session("test-1", "Original", {"v": 1})
         await store.create_session("test-1", "Updated", {"v": 2})
-        
+
         session = await store.get_session("test-1")
         assert session.user_request == "Updated"
         assert session.context == {"v": 2}
-        
+
         await store.close()
 
     @pytest.mark.asyncio
@@ -202,16 +202,16 @@ class TestInMemorySessionStore:
         """Test that update sets last_activity timestamp."""
         store = InMemorySessionStore()
         await store.initialize()
-        
+
         session = await store.create_session("test-1", "Request", {})
         original_activity = session.last_activity
-        
+
         await asyncio.sleep(0.1)
         await store.update_session("test-1", status="processing")
-        
+
         session = await store.get_session("test-1")
         assert session.last_activity > original_activity
-        
+
         await store.close()
 
     @pytest.mark.asyncio
@@ -219,10 +219,10 @@ class TestInMemorySessionStore:
         """Test store with custom session timeout."""
         store = InMemorySessionStore(session_timeout=60, cleanup_interval=30)
         await store.initialize()
-        
+
         assert store.session_timeout == 60
         assert store.cleanup_interval == 30
-        
+
         await store.close()
 
     @pytest.mark.asyncio
@@ -230,12 +230,12 @@ class TestInMemorySessionStore:
         """Test that close properly cancels cleanup task."""
         store = InMemorySessionStore()
         await store.initialize()
-        
+
         # Verify cleanup task is running
         assert store._cleanup_task is not None
         assert not store._cleanup_task.done()
-        
+
         await store.close()
-        
+
         # Task should be cancelled
         assert store._cleanup_task.done()

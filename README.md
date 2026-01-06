@@ -364,9 +364,5 @@ Contributions are welcome! Please read our contributing guidelines before submit
 
 ## Support
 
-- GitHub Issues: https://github.com/okiynai/streamweaver/issues
-- Documentation: https://github.com/okiynai/streamweaver#readme
-
----
-
-Built with ❤️ by [Okiynai](https://okiynai.com)
+- GitHub Issues: https://github.com/AbdalrahmanWael/StreamWeaver/issues
+- Documentation: https://github.com/AbdalrahmanWael/StreamWeaver#readme

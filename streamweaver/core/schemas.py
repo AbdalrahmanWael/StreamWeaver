@@ -184,16 +184,16 @@ def validate_event_data(
 ) -> Optional[Dict[str, Any]]:
     """
     Validate event data against the schema for its event type.
-    
+
     Args:
         event_type: The event type to validate against.
         data: The data to validate.
         strict: If True, raises ValueError on validation failure.
                 If False, returns data as-is on failure.
-    
+
     Returns:
         Validated data as a dictionary.
-        
+
     Raises:
         ValueError: If strict=True and validation fails.
     """
