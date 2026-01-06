@@ -9,7 +9,7 @@ import asyncio
 import logging
 from collections import deque
 from dataclasses import dataclass, field
-from typing import Deque, Dict, List, Optional
+from typing import Optional
 
 from .events import StreamEvent
 
@@ -26,8 +26,8 @@ class EventBuffer:
     """
 
     max_size: int = 100
-    _buffer: Deque[StreamEvent] = field(default_factory=deque)
-    _event_index: Dict[str, int] = field(default_factory=dict)  # event_id -> position
+    _buffer: deque[StreamEvent] = field(default_factory=deque)
+    _event_index: dict[str, int] = field(default_factory=dict)  # event_id -> position
     _position_counter: int = 0
 
     def __post_init__(self):
@@ -51,7 +51,7 @@ class EventBuffer:
         self._position_counter += 1
         logger.debug(f"Buffered event {event.event_id} (buffer size: {len(self._buffer)})")
 
-    def get_events_after(self, last_event_id: str) -> List[StreamEvent]:
+    def get_events_after(self, last_event_id: str) -> list[StreamEvent]:
         """
         Get all events that occurred after the given event ID.
 
@@ -77,7 +77,7 @@ class EventBuffer:
         logger.info(f"Replaying {len(result)} events after {last_event_id}")
         return result
 
-    def get_all_events(self) -> List[StreamEvent]:
+    def get_all_events(self) -> list[StreamEvent]:
         """Get all buffered events in order."""
         return list(self._buffer)
 
@@ -120,7 +120,7 @@ class SessionEventBuffers:
             buffer_size: Maximum events to store per session.
         """
         self.buffer_size = buffer_size
-        self._buffers: Dict[str, EventBuffer] = {}
+        self._buffers: dict[str, EventBuffer] = {}
         self._lock = asyncio.Lock()
 
     async def get_or_create_buffer(self, session_id: str) -> EventBuffer:
@@ -136,7 +136,7 @@ class SessionEventBuffers:
         buffer = await self.get_or_create_buffer(session_id)
         buffer.add(event)
 
-    async def get_events_after(self, session_id: str, last_event_id: str) -> List[StreamEvent]:
+    async def get_events_after(self, session_id: str, last_event_id: str) -> list[StreamEvent]:
         """Get events after the given ID for a session."""
         async with self._lock:
             buffer = self._buffers.get(session_id)
@@ -152,7 +152,7 @@ class SessionEventBuffers:
                 return buffer.clear()
             return 0
 
-    async def get_buffer_stats(self, session_id: str) -> Dict[str, int]:
+    async def get_buffer_stats(self, session_id: str) -> dict[str, int]:
         """Get statistics for a session's buffer."""
         async with self._lock:
             buffer = self._buffers.get(session_id)

@@ -3,9 +3,11 @@ Main streaming service that ties everything together.
 """
 
 import asyncio
+import contextlib
 import logging
 import time
-from typing import Any, Awaitable, Callable, Dict, List, Optional
+from collections.abc import Awaitable
+from typing import Any, Callable, Optional
 
 from pydantic import BaseModel, Field
 
@@ -83,7 +85,7 @@ class StreamWeaver:
             heartbeat_interval=self.config.heartbeat_interval,
             event_buffer_size=self.config.event_buffer_size,
         )
-        self.streaming_tasks: Dict[str, asyncio.Task] = {}
+        self.streaming_tasks: dict[str, asyncio.Task] = {}
         self.metrics: Optional[StreamWeaverMetrics] = None
 
         # Initialize batching config
@@ -111,7 +113,7 @@ class StreamWeaver:
         self,
         session_id: str,
         user_request: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: Optional[dict[str, Any]] = None,
         user_id: Optional[str] = None,
     ) -> None:
         """Register a new session."""
@@ -130,7 +132,7 @@ class StreamWeaver:
         session_id: str,
         event_type: StreamEventType,
         message: str = "",
-        data: Optional[Dict[str, Any]] = None,
+        data: Optional[dict[str, Any]] = None,
         visibility: EventVisibility = EventVisibility.USER_FACING,
         **kwargs,
     ) -> bool:
@@ -236,10 +238,8 @@ class StreamWeaver:
                 task = self.streaming_tasks[session_id]
                 if not task.done():
                     task.cancel()
-                    try:
+                    with contextlib.suppress(asyncio.CancelledError):
                         await task
-                    except asyncio.CancelledError:
-                        pass
                 del self.streaming_tasks[session_id]
 
             await self.session_store.update_session(session_id, status="completed")
@@ -265,11 +265,11 @@ class StreamWeaver:
         self,
         session_id: str,
         last_event_id: str,
-    ) -> List[StreamEvent]:
+    ) -> list[StreamEvent]:
         """Get events for replay after reconnection."""
         return await self.stream_generator.get_replay_events(session_id, last_event_id)
 
-    def get_queue_stats(self, session_id: str) -> Dict[str, Any]:
+    def get_queue_stats(self, session_id: str) -> dict[str, Any]:
         """Get queue statistics for a session."""
         return self.stream_generator.get_queue_stats(session_id)
 

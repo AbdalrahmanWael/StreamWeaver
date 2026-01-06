@@ -6,11 +6,12 @@ into a single SSE message.
 """
 
 import asyncio
+import contextlib
 import json
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 from .events import StreamEvent
 
@@ -25,7 +26,7 @@ class BatchConfig:
     max_batch_size: int = 10
     max_batch_delay_ms: int = 50
     # Event types that should never be batched (sent immediately)
-    immediate_types: List[str] = field(
+    immediate_types: list[str] = field(
         default_factory=lambda: [
             "workflow_completed",
             "error",
@@ -62,7 +63,7 @@ class EventBatcher:
         self.config = config or BatchConfig()
         self.on_batch_ready = on_batch_ready
 
-        self._batch: List[StreamEvent] = []
+        self._batch: list[StreamEvent] = []
         self._batch_start_time: Optional[float] = None
         self._flush_task: Optional[asyncio.Task] = None
         self._lock = asyncio.Lock()
@@ -153,7 +154,7 @@ class EventBatcher:
 
         return self._format_batch(events)
 
-    def _format_batch(self, events: List[StreamEvent]) -> str:
+    def _format_batch(self, events: list[StreamEvent]) -> str:
         """Format a batch of events as SSE."""
         if len(events) == 1:
             return events[0].to_sse_format()
@@ -185,10 +186,8 @@ class EventBatcher:
         self._closed = True
         if self._flush_task and not self._flush_task.done():
             self._flush_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._flush_task
-            except asyncio.CancelledError:
-                pass
         return await self._flush_and_format()
 
 

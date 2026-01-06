@@ -3,57 +3,56 @@
 __version__ = "0.2.0"
 
 # Core exports
-from .core.events import EventVisibility, StreamEvent, StreamEventType, generate_event_id
-from .core.session import InMemorySessionStore, SessionData, SessionStore
-from .core.service import StreamWeaver, StreamWeaverConfig
-from .core.generator import StreamGenerator
-
 # Backpressure
 from .core.backpressure import BackpressurePolicy, BackpressureQueue
 
-# Replay
-from .core.replay import EventBuffer, SessionEventBuffers
+# Batching
+from .core.batching import BatchConfig, BatcherPool, EventBatcher
+from .core.events import EventVisibility, StreamEvent, StreamEventType, generate_event_id
 
 # Filters
 from .core.filters import (
-    EventFilter,
-    VisibilityFilter,
-    TypeFilter,
-    CompositeFilter,
-    NotFilter,
-    CallableFilter,
-    SessionFilter,
-    apply_filter,
-    USER_FACING_FILTER,
     LIVE_UI_FILTER,
     NO_HEARTBEAT_FILTER,
     PROGRESS_ONLY_FILTER,
+    USER_FACING_FILTER,
+    CallableFilter,
+    CompositeFilter,
+    EventFilter,
+    NotFilter,
+    SessionFilter,
+    TypeFilter,
+    VisibilityFilter,
+    apply_filter,
 )
+from .core.generator import StreamGenerator
 
 # Metrics
 from .core.metrics import StreamWeaverMetrics, get_metrics, init_metrics
 
-# Batching
-from .core.batching import EventBatcher, BatcherPool, BatchConfig
+# Replay
+from .core.replay import EventBuffer, SessionEventBuffers
 
 # Schemas
 from .core.schemas import (
-    WorkflowStartedData,
-    WorkflowCompletedData,
-    StepStartedData,
-    StepProgressData,
+    AgentMessageData,
+    ErrorData,
     StepCompletedData,
     StepFailedData,
-    ToolExecutedData,
+    StepProgressData,
+    StepStartedData,
     ToolCompletedData,
-    ErrorData,
-    AgentMessageData,
-    validate_event_data,
-    create_workflow_started,
+    ToolExecutedData,
+    WorkflowCompletedData,
+    WorkflowStartedData,
+    create_error,
     create_step_progress,
     create_tool_executed,
-    create_error,
+    create_workflow_started,
+    validate_event_data,
 )
+from .core.service import StreamWeaver, StreamWeaverConfig
+from .core.session import InMemorySessionStore, SessionData, SessionStore
 
 __all__ = [
     # Version

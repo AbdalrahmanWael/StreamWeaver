@@ -5,12 +5,11 @@ FastAPI integration for StreamWeaver.
 import gzip
 import logging
 from contextlib import asynccontextmanager
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Optional
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import StreamingResponse
 
-from ..core.filters import EventFilter, VisibilityFilter
 from ..core.metrics import PROMETHEUS_AVAILABLE
 from ..core.service import StreamWeaver
 
@@ -142,7 +141,7 @@ def setup_streaming_routes(
         }
 
     @app.post(f"{prefix}/stream/{{session_id}}/close")
-    async def close_stream(session_id: str, request_data: Dict[str, Any] = None):
+    async def close_stream(session_id: str, request_data: dict[str, Any] = None):
         """Close an active stream."""
         session = await weaver.get_session(session_id)
         if not session:

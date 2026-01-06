@@ -1,11 +1,11 @@
 """Tests for event batching."""
 
-import asyncio
-import pytest
 import time
 
+import pytest
+
 from streamweaver import StreamEvent, StreamEventType
-from streamweaver.core.batching import BatchConfig, EventBatcher, BatcherPool
+from streamweaver.core.batching import BatchConfig, BatcherPool, EventBatcher
 
 
 def create_event(

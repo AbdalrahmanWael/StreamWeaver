@@ -3,8 +3,10 @@ Stream generator for SSE events.
 """
 
 import asyncio
+import contextlib
 import logging
-from typing import Any, AsyncGenerator, Awaitable, Callable, Dict, List, Optional
+from collections.abc import AsyncGenerator, Awaitable
+from typing import Any, Callable, Optional
 
 from .backpressure import BackpressurePolicy, BackpressureQueue
 from .events import EventVisibility, StreamEvent, StreamEventType
@@ -43,9 +45,9 @@ class StreamGenerator:
         self.heartbeat_interval = heartbeat_interval
         self.event_buffer_size = event_buffer_size
 
-        self.active_streams: Dict[str, BackpressureQueue] = {}
-        self.active_stream_tasks: Dict[str, asyncio.Task] = {}
-        self._event_callbacks: Dict[str, Callable[[StreamEvent], Awaitable[None]]] = {}
+        self.active_streams: dict[str, BackpressureQueue] = {}
+        self.active_stream_tasks: dict[str, asyncio.Task] = {}
+        self._event_callbacks: dict[str, Callable[[StreamEvent], Awaitable[None]]] = {}
         self._event_buffers = SessionEventBuffers(buffer_size=event_buffer_size)
 
     def register_event_callback(
@@ -214,10 +216,8 @@ class StreamGenerator:
         finally:
             if heartbeat_task and not heartbeat_task.done():
                 heartbeat_task.cancel()
-                try:
+                with contextlib.suppress(asyncio.CancelledError):
                     await heartbeat_task
-                except asyncio.CancelledError:
-                    pass
 
             if session_id in self.active_streams and self.active_streams[session_id] is event_queue:
                 self.active_streams.pop(session_id, None)
@@ -265,10 +265,8 @@ class StreamGenerator:
             task = self.active_stream_tasks[session_id]
             if not task.done():
                 task.cancel()
-                try:
+                with contextlib.suppress(asyncio.CancelledError):
                     await task
-                except asyncio.CancelledError:
-                    pass
             del self.active_stream_tasks[session_id]
 
     async def cleanup_queue(self, session_id: str) -> None:
@@ -303,11 +301,11 @@ class StreamGenerator:
         self,
         session_id: str,
         last_event_id: str,
-    ) -> List[StreamEvent]:
+    ) -> list[StreamEvent]:
         """Get events for replay after the given event ID."""
         return await self._event_buffers.get_events_after(session_id, last_event_id)
 
-    def get_queue_stats(self, session_id: str) -> Dict[str, Any]:
+    def get_queue_stats(self, session_id: str) -> dict[str, Any]:
         """Get queue statistics for a session."""
         queue = self.active_streams.get(session_id)
         if queue is None:

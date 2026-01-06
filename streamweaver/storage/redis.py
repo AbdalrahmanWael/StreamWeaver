@@ -7,7 +7,7 @@ Provides production-ready distributed session storage using Redis.
 import json
 import logging
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from ..core.session import SessionData, SessionStore
 
@@ -128,7 +128,7 @@ class RedisSessionStore(SessionStore):
         self,
         session_id: str,
         user_request: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         user_id: Optional[str] = None,
     ) -> SessionData:
         """Create a new session in Redis."""

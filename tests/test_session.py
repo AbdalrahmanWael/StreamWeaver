@@ -1,10 +1,11 @@
 """Tests for session management."""
 
 import asyncio
-import pytest
 import time
 
-from streamweaver import SessionData, InMemorySessionStore
+import pytest
+
+from streamweaver import InMemorySessionStore, SessionData
 
 
 class TestSessionData:

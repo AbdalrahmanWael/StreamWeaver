@@ -5,9 +5,9 @@ Provides Pydantic models for validated event payloads with better
 IDE autocomplete and type safety.
 """
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class BaseEventData(BaseModel):
@@ -23,7 +23,7 @@ class WorkflowStartedData(BaseEventData):
     workflow_id: Optional[str] = None
     workflow_name: Optional[str] = None
     total_steps: Optional[int] = None
-    context: Optional[Dict[str, Any]] = None
+    context: Optional[dict[str, Any]] = None
 
 
 class WorkflowCompletedData(BaseEventData):
@@ -66,7 +66,7 @@ class StepFailedData(BaseEventData):
     step_id: Optional[str] = None
     error_message: str
     error_code: Optional[str] = None
-    error_details: Optional[Dict[str, Any]] = None
+    error_details: Optional[dict[str, Any]] = None
     recoverable: bool = False
 
 
@@ -74,7 +74,7 @@ class ToolExecutedData(BaseEventData):
     """Data for TOOL_EXECUTED events."""
 
     tool_name: str
-    tool_input: Optional[Dict[str, Any]] = None
+    tool_input: Optional[dict[str, Any]] = None
     tool_description: Optional[str] = None
 
 
@@ -94,7 +94,7 @@ class ErrorData(BaseEventData):
     error_message: str
     error_code: Optional[str] = None
     error_type: Optional[str] = None
-    error_details: Optional[Dict[str, Any]] = None
+    error_details: Optional[dict[str, Any]] = None
     recoverable: bool = False
     retry_after_ms: Optional[int] = None
 
@@ -128,7 +128,7 @@ class UserDecisionData(BaseEventData):
 
     decision_type: str  # e.g., "approve", "reject", "modify"
     decision_value: Optional[Any] = None
-    decision_context: Optional[Dict[str, Any]] = None
+    decision_context: Optional[dict[str, Any]] = None
 
 
 class HeartbeatData(BaseEventData):
@@ -154,12 +154,12 @@ EventData = Union[
     ReasoningChunkData,
     UserDecisionData,
     HeartbeatData,
-    Dict[str, Any],
+    dict[str, Any],
 ]
 
 
 # Mapping from event type to data schema
-EVENT_TYPE_SCHEMAS: Dict[str, type] = {
+EVENT_TYPE_SCHEMAS: dict[str, type] = {
     "workflow_started": WorkflowStartedData,
     "workflow_completed": WorkflowCompletedData,
     "step_started": StepStartedData,
@@ -179,9 +179,9 @@ EVENT_TYPE_SCHEMAS: Dict[str, type] = {
 
 def validate_event_data(
     event_type: str,
-    data: Optional[Dict[str, Any]],
+    data: Optional[dict[str, Any]],
     strict: bool = False,
-) -> Optional[Dict[str, Any]]:
+) -> Optional[dict[str, Any]]:
     """
     Validate event data against the schema for its event type.
 
@@ -209,7 +209,7 @@ def validate_event_data(
         return validated.model_dump(exclude_none=True)
     except Exception as e:
         if strict:
-            raise ValueError(f"Invalid data for event type '{event_type}': {e}")
+            raise ValueError(f"Invalid data for event type '{event_type}': {e}") from e
         return data
 
 
@@ -218,7 +218,7 @@ def create_workflow_started(
     workflow_name: Optional[str] = None,
     total_steps: Optional[int] = None,
     **kwargs,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Helper to create WorkflowStartedData."""
     return WorkflowStartedData(
         workflow_id=workflow_id,
@@ -234,7 +234,7 @@ def create_step_progress(
     items_processed: Optional[int] = None,
     items_total: Optional[int] = None,
     **kwargs,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Helper to create StepProgressData."""
     return StepProgressData(
         step_id=step_id,
@@ -247,10 +247,10 @@ def create_step_progress(
 
 def create_tool_executed(
     tool_name: str,
-    tool_input: Optional[Dict[str, Any]] = None,
+    tool_input: Optional[dict[str, Any]] = None,
     tool_description: Optional[str] = None,
     **kwargs,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Helper to create ToolExecutedData."""
     return ToolExecutedData(
         tool_name=tool_name,
@@ -266,7 +266,7 @@ def create_error(
     error_type: Optional[str] = None,
     recoverable: bool = False,
     **kwargs,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Helper to create ErrorData."""
     return ErrorData(
         error_message=error_message,

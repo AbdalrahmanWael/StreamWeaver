@@ -6,8 +6,7 @@ import pytest
 pytest.importorskip("fastapi")
 
 from streamweaver import StreamWeaver
-from streamweaver.integrations.websocket import WebSocketStreamHandler, WEBSOCKET_AVAILABLE
-
+from streamweaver.integrations.websocket import WEBSOCKET_AVAILABLE, WebSocketStreamHandler
 
 pytestmark = pytest.mark.skipif(not WEBSOCKET_AVAILABLE, reason="FastAPI not installed")
 

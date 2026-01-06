@@ -1,13 +1,12 @@
 """Tests for StreamEvent and event types."""
 
-import pytest
-import time
 import json
+import time
 
 from streamweaver import (
+    EventVisibility,
     StreamEvent,
     StreamEventType,
-    EventVisibility,
     generate_event_id,
 )
 

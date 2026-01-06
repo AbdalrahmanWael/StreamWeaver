@@ -1,15 +1,15 @@
 """Tests for StreamWeaver service."""
 
 import asyncio
+
 import pytest
-from datetime import datetime
 
 from streamweaver import (
-    StreamWeaver,
-    StreamEventType,
-    StreamWeaverConfig,
-    EventVisibility,
     BackpressurePolicy,
+    EventVisibility,
+    StreamEventType,
+    StreamWeaver,
+    StreamWeaverConfig,
 )
 
 

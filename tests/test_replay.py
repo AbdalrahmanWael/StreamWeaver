@@ -1,9 +1,10 @@
 """Tests for event replay functionality."""
 
-import pytest
 import time
 
-from streamweaver import StreamEvent, StreamEventType, EventVisibility
+import pytest
+
+from streamweaver import StreamEvent, StreamEventType
 from streamweaver.core.replay import EventBuffer, SessionEventBuffers
 
 
@@ -110,7 +111,7 @@ class TestEventBuffer:
         """Test clearing the buffer."""
         buffer = EventBuffer(max_size=10)
 
-        for i in range(3):
+        for _i in range(3):
             event = StreamEvent(
                 event_type=StreamEventType.STEP_PROGRESS,
                 session_id="test-1",
@@ -179,7 +180,7 @@ class TestSessionEventBuffers:
         """Test clearing a session's buffer."""
         buffers = SessionEventBuffers(buffer_size=50)
 
-        for i in range(3):
+        for _i in range(3):
             event = StreamEvent(
                 event_type=StreamEventType.STEP_PROGRESS,
                 session_id="session-1",
@@ -197,7 +198,7 @@ class TestSessionEventBuffers:
         """Test getting buffer statistics."""
         buffers = SessionEventBuffers(buffer_size=100)
 
-        for i in range(5):
+        for _i in range(5):
             event = StreamEvent(
                 event_type=StreamEventType.STEP_PROGRESS,
                 session_id="session-1",

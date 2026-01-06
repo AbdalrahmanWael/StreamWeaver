@@ -2,12 +2,12 @@
 Core streaming event types and data models for StreamWeaver.
 """
 
+import contextlib
 import json
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 
 class EventVisibility(Enum):
@@ -56,12 +56,12 @@ class StreamEvent:
     event_id: str = field(default_factory=generate_event_id)
     step_number: Optional[int] = None
     message: str = ""
-    data: Optional[Dict[str, Any]] = None
+    data: Optional[dict[str, Any]] = None
     progress_percent: Optional[float] = None
     tool_used: Optional[str] = None
     duration_ms: Optional[int] = None
     success: bool = True
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[dict[str, Any]] = None
     visibility: EventVisibility = EventVisibility.USER_FACING
 
     def to_sse_format(self) -> str:
@@ -95,7 +95,7 @@ class StreamEvent:
         # Include id: field for Last-Event-ID reconnection support
         return f"id: {self.event_id}\nevent: message\ndata: {json.dumps(event_data)}\n\n"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert event to dictionary for serialization."""
         event_type_value = (
             self.event_type.value
@@ -129,13 +129,11 @@ class StreamEvent:
         return result
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "StreamEvent":
+    def from_dict(cls, data: dict[str, Any]) -> "StreamEvent":
         """Create StreamEvent from dictionary."""
         event_type = data.get("type", "")
-        try:
+        with contextlib.suppress(ValueError):
             event_type = StreamEventType(event_type)
-        except ValueError:
-            pass  # Keep as string if not a known type
 
         visibility = data.get("visibility", "user_facing")
         try:

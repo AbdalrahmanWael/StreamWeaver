@@ -3,7 +3,7 @@ Utility functions for serialization and data handling.
 """
 
 import json
-from typing import Any, Dict
+from typing import Any
 
 
 def safe_serialize(obj: Any) -> Any:
@@ -22,7 +22,7 @@ def safe_serialize(obj: Any) -> Any:
         return str(obj)
 
 
-def clean_event_data(data: Dict[str, Any]) -> Dict[str, Any]:
+def clean_event_data(data: dict[str, Any]) -> dict[str, Any]:
     """Clean event data for safe serialization"""
     cleaned = {}
     for key, value in data.items():

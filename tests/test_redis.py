@@ -1,13 +1,13 @@
 """Tests for Redis session storage."""
 
-import pytest
 import time
+
+import pytest
 
 # Skip all tests if redis is not available
 pytest.importorskip("redis")
 
-from streamweaver.storage.redis import RedisSessionStore, REDIS_AVAILABLE
-
+from streamweaver.storage.redis import REDIS_AVAILABLE, RedisSessionStore
 
 # Skip entire module if redis is not available
 pytestmark = pytest.mark.skipif(not REDIS_AVAILABLE, reason="redis package not installed")

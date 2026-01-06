@@ -8,13 +8,13 @@ Metrics are only active if prometheus_client is installed.
 import logging
 import time
 from contextlib import contextmanager
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
 # Try to import prometheus_client, but don't fail if it's not installed
 try:
-    from prometheus_client import Counter, Gauge, Histogram, Info, CollectorRegistry, REGISTRY
+    from prometheus_client import REGISTRY, Counter, Gauge, Histogram
 
     PROMETHEUS_AVAILABLE = True
 except ImportError:

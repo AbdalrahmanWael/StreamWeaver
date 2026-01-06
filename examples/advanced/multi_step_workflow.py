@@ -7,12 +7,11 @@ Demonstrates step-by-step progress tracking with StreamWeaver.
 import asyncio
 from contextlib import asynccontextmanager
 
+import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
-import uvicorn
 
-from streamweaver import StreamWeaver, StreamEventType
-
+from streamweaver import StreamEventType, StreamWeaver
 
 # Initialize StreamWeaver
 weaver = StreamWeaver()

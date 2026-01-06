@@ -3,11 +3,11 @@
 import pytest
 
 from streamweaver.core.metrics import (
+    PROMETHEUS_AVAILABLE,
+    NoOpMetric,
     StreamWeaverMetrics,
     get_metrics,
     init_metrics,
-    PROMETHEUS_AVAILABLE,
-    NoOpMetric,
 )
 
 

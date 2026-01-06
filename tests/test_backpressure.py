@@ -1,6 +1,7 @@
 """Tests for backpressure handling."""
 
 import asyncio
+
 import pytest
 
 from streamweaver import BackpressurePolicy, BackpressureQueue

@@ -7,7 +7,7 @@ before they're sent to clients.
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Callable, List, Optional, Set, Union
+from typing import Callable, Optional, Union
 
 from .events import EventVisibility, StreamEvent, StreamEventType
 
@@ -46,7 +46,7 @@ class EventFilter(ABC):
 class VisibilityFilter(EventFilter):
     """Filter events by their visibility level."""
 
-    def __init__(self, visibilities: Union[EventVisibility, List[EventVisibility]]):
+    def __init__(self, visibilities: Union[EventVisibility, list[EventVisibility]]):
         """
         Initialize the visibility filter.
 
@@ -55,7 +55,7 @@ class VisibilityFilter(EventFilter):
         """
         if isinstance(visibilities, EventVisibility):
             visibilities = [visibilities]
-        self.visibilities: Set[EventVisibility] = set(visibilities)
+        self.visibilities: set[EventVisibility] = set(visibilities)
 
     def should_include(self, event: StreamEvent) -> bool:
         return event.visibility in self.visibilities
@@ -69,7 +69,7 @@ class TypeFilter(EventFilter):
 
     def __init__(
         self,
-        event_types: Union[StreamEventType, str, List[Union[StreamEventType, str]]],
+        event_types: Union[StreamEventType, str, list[Union[StreamEventType, str]]],
         include: bool = True,
     ):
         """
@@ -82,7 +82,7 @@ class TypeFilter(EventFilter):
         if isinstance(event_types, (StreamEventType, str)):
             event_types = [event_types]
 
-        self.event_types: Set[str] = set()
+        self.event_types: set[str] = set()
         for et in event_types:
             if isinstance(et, StreamEventType):
                 self.event_types.add(et.value)
@@ -108,7 +108,7 @@ class TypeFilter(EventFilter):
 class CompositeFilter(EventFilter):
     """Combine multiple filters with AND or OR logic."""
 
-    def __init__(self, filters: List[EventFilter], operator: str = "and"):
+    def __init__(self, filters: list[EventFilter], operator: str = "and"):
         """
         Initialize the composite filter.
 
@@ -166,7 +166,7 @@ class CallableFilter(EventFilter):
 class SessionFilter(EventFilter):
     """Filter events by session ID."""
 
-    def __init__(self, session_ids: Union[str, List[str]], include: bool = True):
+    def __init__(self, session_ids: Union[str, list[str]], include: bool = True):
         """
         Initialize the session filter.
 
@@ -176,7 +176,7 @@ class SessionFilter(EventFilter):
         """
         if isinstance(session_ids, str):
             session_ids = [session_ids]
-        self.session_ids: Set[str] = set(session_ids)
+        self.session_ids: set[str] = set(session_ids)
         self.include = include
 
     def should_include(self, event: StreamEvent) -> bool:
@@ -203,7 +203,7 @@ PROGRESS_ONLY_FILTER = TypeFilter(
 )
 
 
-def apply_filter(events: List[StreamEvent], filter_: Optional[EventFilter]) -> List[StreamEvent]:
+def apply_filter(events: list[StreamEvent], filter_: Optional[EventFilter]) -> list[StreamEvent]:
     """
     Apply a filter to a list of events.
 

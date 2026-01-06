@@ -5,11 +5,11 @@ Provides an alternative to SSE using WebSockets for bidirectional communication.
 """
 
 import asyncio
+import contextlib
 import json
 import logging
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Optional
 
-from ..core.events import StreamEvent, StreamEventType
 from ..core.filters import EventFilter
 from ..core.service import StreamWeaver
 
@@ -57,13 +57,13 @@ class WebSocketStreamHandler:
         self.weaver = weaver
         self.ping_interval = ping_interval
         self.ping_timeout = ping_timeout
-        self._active_connections: Dict[str, "WebSocket"] = {}
-        self._message_handlers: Dict[str, Callable] = {}
+        self._active_connections: dict[str, WebSocket] = {}
+        self._message_handlers: dict[str, Callable] = {}
 
     def register_message_handler(
         self,
         message_type: str,
-        handler: Callable[[str, Dict[str, Any]], None],
+        handler: Callable[[str, dict[str, Any]], None],
     ) -> None:
         """
         Register a handler for incoming WebSocket messages.
@@ -123,10 +123,8 @@ class WebSocketStreamHandler:
             # Cancel remaining tasks
             for task in pending:
                 task.cancel()
-                try:
+                with contextlib.suppress(asyncio.CancelledError):
                     await task
-                except asyncio.CancelledError:
-                    pass
 
         except Exception as e:
             logger.error(f"WebSocket error for session {session_id}: {e}")
@@ -134,10 +132,8 @@ class WebSocketStreamHandler:
             self._active_connections.pop(session_id, None)
 
             if websocket.client_state != WebSocketState.DISCONNECTED:
-                try:
+                with contextlib.suppress(Exception):
                     await websocket.close()
-                except Exception:
-                    pass
 
             logger.info(f"WebSocket disconnected for session {session_id}")
 
@@ -223,7 +219,7 @@ class WebSocketStreamHandler:
             logger.error(f"Ping error for session {session_id}: {e}")
             raise
 
-    def _parse_sse_to_json(self, sse_data: str) -> Optional[Dict[str, Any]]:
+    def _parse_sse_to_json(self, sse_data: str) -> Optional[dict[str, Any]]:
         """Parse SSE format to JSON dict."""
         try:
             # Extract data line from SSE format
@@ -240,7 +236,7 @@ class WebSocketStreamHandler:
     async def send_to_session(
         self,
         session_id: str,
-        message: Dict[str, Any],
+        message: dict[str, Any],
     ) -> bool:
         """
         Send a message to a specific session's WebSocket.
@@ -263,7 +259,7 @@ class WebSocketStreamHandler:
             logger.error(f"Error sending to session {session_id}: {e}")
             return False
 
-    async def broadcast(self, message: Dict[str, Any]) -> int:
+    async def broadcast(self, message: dict[str, Any]) -> int:
         """
         Broadcast a message to all connected sessions.
 

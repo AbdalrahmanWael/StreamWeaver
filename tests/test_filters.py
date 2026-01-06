@@ -1,24 +1,22 @@
 """Tests for event filtering."""
 
-import pytest
 import time
 
 from streamweaver import (
-    StreamEvent,
-    StreamEventType,
-    EventVisibility,
-    EventFilter,
-    VisibilityFilter,
-    TypeFilter,
-    CompositeFilter,
-    NotFilter,
-    CallableFilter,
-    SessionFilter,
-    apply_filter,
-    USER_FACING_FILTER,
     LIVE_UI_FILTER,
     NO_HEARTBEAT_FILTER,
     PROGRESS_ONLY_FILTER,
+    USER_FACING_FILTER,
+    CallableFilter,
+    CompositeFilter,
+    EventVisibility,
+    NotFilter,
+    SessionFilter,
+    StreamEvent,
+    StreamEventType,
+    TypeFilter,
+    VisibilityFilter,
+    apply_filter,
 )
 
 

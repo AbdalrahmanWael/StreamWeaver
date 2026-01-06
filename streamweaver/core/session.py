@@ -3,11 +3,12 @@ Session management for StreamWeaver.
 """
 
 import asyncio
+import contextlib
 import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Any
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ class SessionData:
 
     session_id: str
     user_request: str
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     created_at: float = field(default_factory=time.time)
     last_activity: float = field(default_factory=time.time)
     status: str = "active"
@@ -36,7 +37,7 @@ class SessionStore(ABC):
         self,
         session_id: str,
         user_request: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         user_id: Optional[str] = None,
     ) -> SessionData:
         """Create a new session"""
@@ -67,7 +68,7 @@ class InMemorySessionStore(SessionStore):
     """In-memory session storage for development and testing"""
 
     def __init__(self, session_timeout: int = 3600, cleanup_interval: int = 300):
-        self.sessions: Dict[str, SessionData] = {}
+        self.sessions: dict[str, SessionData] = {}
         self.session_timeout = session_timeout
         self.cleanup_interval = cleanup_interval
         self._cleanup_task: Optional[asyncio.Task] = None
@@ -81,7 +82,7 @@ class InMemorySessionStore(SessionStore):
         self,
         session_id: str,
         user_request: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         user_id: Optional[str] = None,
     ) -> SessionData:
         """Create a new session"""
@@ -156,7 +157,5 @@ class InMemorySessionStore(SessionStore):
         """Cleanup resources"""
         if self._cleanup_task and not self._cleanup_task.done():
             self._cleanup_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._cleanup_task
-            except asyncio.CancelledError:
-                pass

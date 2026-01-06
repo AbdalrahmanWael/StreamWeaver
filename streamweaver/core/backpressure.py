@@ -3,6 +3,7 @@ Backpressure handling for StreamWeaver event queues.
 """
 
 import asyncio
+import contextlib
 import logging
 from enum import Enum
 from typing import Any, Optional
@@ -95,10 +96,8 @@ class BackpressureQueue:
                 # Remove oldest item
                 if self._items:
                     self._items.pop(0)
-                    try:
+                    with contextlib.suppress(asyncio.QueueEmpty):
                         self._queue.get_nowait()
-                    except asyncio.QueueEmpty:
-                        pass
                     self._dropped_count += 1
                     logger.debug(f"Dropped oldest event (total dropped: {self._dropped_count})")
                 self._items.append(item)
