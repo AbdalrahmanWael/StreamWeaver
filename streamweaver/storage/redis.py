@@ -81,7 +81,7 @@ class RedisSessionStore(SessionStore):
 
         # Test connection
         try:
-            await self._redis.ping()
+            await self._redis.ping()  # type: ignore[misc]
             logger.info("Redis connection verified")
         except Exception as e:
             logger.error(f"Failed to connect to Redis: {e}")
@@ -244,7 +244,9 @@ class RedisSessionStore(SessionStore):
 
         return session_ids
 
-    async def extend_session(self, session_id: str, additional_seconds: int = None) -> bool:
+    async def extend_session(
+        self, session_id: str, additional_seconds: Optional[int] = None
+    ) -> bool:
         """Extend a session's TTL."""
         if self._redis is None:
             raise RuntimeError("Redis not initialized. Call initialize() first.")

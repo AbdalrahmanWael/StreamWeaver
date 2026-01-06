@@ -189,20 +189,20 @@ class StreamWeaverMetrics:
     def _init_noop_metrics(self) -> None:
         """Initialize no-op metrics when Prometheus is not available."""
         noop = NoOpMetric()
-        self.events_published = noop
-        self.events_dropped = noop
-        self.event_publish_duration = noop
-        self.sessions_created = noop
-        self.sessions_closed = noop
-        self.active_sessions = noop
-        self.active_streams = noop
-        self.stream_connections = noop
-        self.stream_disconnections = noop
-        self.queue_depth = noop
-        self.queue_max_depth = noop
-        self.replay_requests = noop
-        self.events_replayed = noop
-        self.errors = noop
+        self.events_published = noop  # type: ignore[assignment]
+        self.events_dropped = noop  # type: ignore[assignment]
+        self.event_publish_duration = noop  # type: ignore[assignment]
+        self.sessions_created = noop  # type: ignore[assignment]
+        self.sessions_closed = noop  # type: ignore[assignment]
+        self.active_sessions = noop  # type: ignore[assignment]
+        self.active_streams = noop  # type: ignore[assignment]
+        self.stream_connections = noop  # type: ignore[assignment]
+        self.stream_disconnections = noop  # type: ignore[assignment]
+        self.queue_depth = noop  # type: ignore[assignment]
+        self.queue_max_depth = noop  # type: ignore[assignment]
+        self.replay_requests = noop  # type: ignore[assignment]
+        self.events_replayed = noop  # type: ignore[assignment]
+        self.errors = noop  # type: ignore[assignment]
 
     @contextmanager
     def measure_publish_time(self, event_type: str):
